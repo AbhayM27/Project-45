@@ -4,12 +4,13 @@ var BG, level1BG, level1bac,level1bac2;
 var BGMusic, JumpSound, DragonRoar;
 var Ground1, Ground2, Ground3, Ground4;
 var Ground, fakeGround, Hill;
-var MonskeyIdle, Monskey,MonskeyWalkR,MonskeyWalkL,MonskeyJump,Monsk;
+var MonskeyIdle, Monskey, MonskeyWalkR,MonskeyWalkL,MonskeyJump,Monsk;
 var MonskeyGroup, edges;
 var GoblinWalking, GoblinIdle, Enemy1, Enemy2;
 var DragonFlyingL;
 var obstacleGroup;
-
+var lives = 3;
+var life1, life2, life3;
 
 
 function preload() {
@@ -29,7 +30,7 @@ function preload() {
   GoblinWalkingR = loadAnimation("Images 2/Goblin 1.png","Images 2/Goblin 2.png","Images 2/Goblin 3.png","Images 2/Goblin 4.png","Images 2/Goblin 5.png","Images 2/Goblin 6.png","Images 2/Goblin 7.png")
   GoblinWalkingL = loadAnimation("Images 2/Goblin 1L.png","Images 2/Goblin 2L.png","Images 2/Goblin 3L.png","Images 2/Goblin 4L.png","Images 2/Goblin 5L.png","Images 2/Goblin 6L.png","Images 2/Goblin 7L.png");
   DragonFlyingL = loadAnimation("Images 2/Dragon L1.png","Images 2/Dragon L2.png","Images 2/Dragon L3.png");
-  Fireball = loadAnimation("Images/Small Fireball.png","Images/Medium Fireball.png","Images/Big Fireball.png")
+  Fireball = loadAnimation("Images/Small Fireball.png","Images/Medium Fireball.png","Images/Big Fireball.png");
   
 
   // Sound effects
@@ -50,6 +51,7 @@ function setup() {
   level1bac = createSprite(800,200,20,20);
   level1bac.addImage(level1BG);
   level1BG.resize(1600,800);
+
  
 
   ///////////////////////////////////////
@@ -92,9 +94,39 @@ function draw() {
   
   }
 
+  if(gameState === "level1" || gameState === "level2") {
+    life1 = createSprite(100,20,20,20);
+    life1.addAnimation("Life1",MonskeyIdle);
+    life1.scale = 0.6;
+    life2 = createSprite(1500,20,20,20);
+    life2.addAnimation("Life2",MonskeyIdle);
+    life2.scale = 0.6;
+    life3 = createSprite(1550,20,20,20);
+    life3.addAnimation("Life3",MonskeyIdle);
+    life3.scale = 0.6;
+  
+    }
+
   if(gameState === "level1"){
     BGMusic.stop(); 
     fakeGround.x = Monskey.x;
+
+    if(Monskey.isTouching(enemyGroup) && lives === 3) {
+        lives = lives -1
+        life3.remove();
+        console.log(lives);
+      } else if(Monskey.isTouching(enemyGroup) && lives === 2) {
+        lives = lives -1;
+        life2.visible = false;
+        console.log("Works1");
+      } else if(Monskey.isTouching(enemyGroup) && lives === 1) {
+        lives = lives -1;
+        life1.visible = false;
+        console.log("Works2");
+      }
+     
+    
+
   
     // for moving right
    if(keyWentDown(RIGHT_ARROW)) {
@@ -152,6 +184,10 @@ function draw() {
 
 
 
+  spawnEnemy();
+  spawnHill();
+
+
   }
    
   Monskey.collide(edges[0]);
@@ -170,9 +206,7 @@ function draw() {
 
   //setTimeout(,5000);
 
-  spawnEnemy();
-  spawnHill();
-
+  //
 
   
   drawSprites();
@@ -218,6 +252,7 @@ function spawnEnemy() {
               Enemy1.addAnimation("WalingL",GoblinWalkingL);  
               Enemy1.velocityX = rand; 
               Enemy1.depth = 3;
+              enemyGroup.add(Enemy1);
               }
         break;
       case 2: 
